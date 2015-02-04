@@ -12,8 +12,9 @@ import (
 
 //構造体(ハッシュみたいなもん)
 type Result struct {
-	Url  string
-	star string
+	Url    string
+	star   string
+	c_name string
 }
 
 //定数
@@ -32,13 +33,15 @@ func GetPage(url string) {
 	if e == nil {
 		var result Result
 		doc.Find("div.listBox").Each(func(_ int, s *goquery.Selection) {
-			url, _ := s.ChildrenFiltered("div.ttl").Find("a").Attr("href")
+			url, _ := s.ChildrenFiltered("div.ttl").ChildrenFiltered("div.companyName").ChildrenFiltered("h3").Find("a").Attr("href")
+			c_name := s.ChildrenFiltered("div.ttl").ChildrenFiltered("div.companyName").ChildrenFiltered("h3").Find("a").Text()
 			star := s.ChildrenFiltered("div.jobContent").ChildrenFiltered("div.txt").Find("em").Text()
 
 			//star := 4.0
 			//fmt.Println(s.ChildrenFiltered("div.jobContent div.txt").Text())
 			result.Url = url
 			result.star = star
+			result.c_name = c_name
 			results = append(results, result)
 		})
 
@@ -60,6 +63,7 @@ func main() {
 	<-finished
 
 	for _, result := range results {
+		fmt.Println(result.c_name)
 		fmt.Println(result.Url)
 		fmt.Println(result.star)
 	}
